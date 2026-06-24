@@ -1,0 +1,101 @@
+@startuml SD-07
+skinparam backgroundColor #FAFAFA
+skinparam roundcorner 10
+skinparam shadowing false
+skinparam sequenceArrowThickness 1.5
+skinparam sequenceLifeLineBorderColor #888888
+skinparam sequenceParticipantBorderColor #444444
+skinparam sequenceParticipantFontSize 12
+skinparam sequenceMessageFontSize 11
+
+title SD-07: Login Admin & Akses Dashboard
+
+actor "Admin\n(Browser)" as Admin #4A90D9
+participant "Laravel\n(AuthController)" as Auth #2E8B57
+participant "Middleware\n(auth+admin)" as MW #E74C3C
+participant "AdminController" as Dashboard #F39C12
+database "MySQL\n(Database)" as DB #3498DB
+participant "ChatbotService" as Service #50C878
+
+== 1. Admin Buka Halaman Login ==
+Admin -> Auth : GET /login
+activate Auth
+Auth --> Admin : Tampilkan form login\n(email + password)
+deactivate Auth
+
+== 2. Admin Submit Login ==
+Admin -> Auth : POST /login\n{email: "admin@rsj.com",\npassword: "password123"}
+activate Auth
+
+note right of Auth
+  Validasi:
+  - email: wajib, format email
+  - password: wajib
+end note
+
+Auth -> DB : SELECT * FROM users\nWHERE email = "admin@rsj.com"
+activate DB
+DB --> Auth : user ditemukan\n{id:1, role:"super_admin",\npassword: "$2y$10$..."}
+deactivate DB
+
+Auth -> Auth : Auth::attempt(credentials)
+note right of Auth
+  Bandingkan hash password
+  → Cocok! Login berhasil
+end note
+
+Auth -> Auth : session()->regenerate()
+Auth --> Admin : Redirect → /admin\n(Set-Cookie: session)
+deactivate Auth
+
+== 3. Akses Dashboard Admin ==
+Admin -> Dashboard : GET /admin\n(Cookie: session)
+activate Dashboard
+
+Dashboard -> MW : Cek middleware auth + admin
+activate MW
+MW -> MW : Auth::check() → true\nUser::role → "super_admin" ✓
+MW --> Dashboard : Lewat (authorized)
+deactivate MW
+
+== 4. Kumpulkan Data Dashboard ==
+Dashboard -> DB : COUNT(*) FROM chatbot_feedback
+activate DB
+DB --> Dashboard : totalFeedback = 156
+deactivate DB
+
+Dashboard -> DB : COUNT(*) FROM data_ruangans
+activate DB
+DB --> Dashboard : totalRooms = 85
+deactivate DB
+
+Dashboard -> DB : SELECT DATE, SUM(is_correct),...\nGROUP BY date
+activate DB
+DB --> Dashboard : akurasi per hari (chart data)
+deactivate DB
+
+Dashboard -> DB : SELECT feedback + ruangan\nORDER BY created_at DESC\nLIMIT 20
+activate DB
+DB --> Dashboard : recentFeedbacks (paginated)
+deactivate DB
+
+Dashboard -> Service : Cache::get('last_sync_time')
+activate Service
+Service --> Dashboard : "19/06/2026 10:30:00"
+deactivate Service
+
+== 5. Tampilkan Dashboard ==
+Dashboard --> Admin : Render view admin.dashboard\n(stats, chart, feedback log)
+deactivate Dashboard
+
+note over Admin
+  Dashboard menampilkan:
+  - Total chat: 2.025
+  - Total feedback: 156
+  - Akurasi model AI: 96%
+  - Grafik akurasi harian
+  - Log feedback terbaru
+  - Tombol sinkronisasi model
+end note
+
+@enduml

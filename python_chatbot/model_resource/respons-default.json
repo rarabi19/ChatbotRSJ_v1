@@ -1,0 +1,57 @@
+{
+    "intents": [
+        {
+            "sapaan": [
+                "Halo, selamat datang di layanan Chatbot RSJ Tampan. Sebutkan ruangan ataupun keperluan Anda, saya siap membantu Anda menemukan ruangan.",
+                "Selamat datang di RSJ Tampan. Kami siap melayani sepenuh hati. Agar tidak bingung, silakan sebutkan ruangan mana yang ingin Bapak/Ibu tuju?",
+                "Wa'alaikumussalam, salam sehat. Mari saya bantu navigasi Anda di sini. Silakan informasikan ruangan yang dicari, saya akan tunjukkan arahnya.",
+                "Halo, senang bisa menyapa Anda. Jangan khawatir tersesat, saya siap memandu langkah Anda. Ruangan apa yang sedang Anda cari hari ini?",
+                "Salam hormat. Saya asisten virtual layanan informasi RSJ Tampan. Silakan sampaikan tujuan atau ruangan yang Anda butuhkan, saya siap mengarahkan.",
+                "Halo! Demi kenyamanan kunjungan Anda, saya siap membantu mencarikan lokasi ruangan. Boleh tahu Bapak/Ibu ingin menuju ke mana?",
+                "Selamat datang, Terima kasih telah menghubungi kami. Silakan ketik nama poli atau ruangan yang dituju, kami akan berikan petunjuk arah terbaik.",
+                "Hai, selamat datang. Jika butuh petunjuk arah, Anda bertanya pada tempat yang tepat. Sebutkan saja nama ruangannya, saya siap bantu temukan."
+            ]
+        },
+        {
+            "penutup": [
+                "Sama-sama, Bapak/Ibu. Senang bisa membantu memandu Anda hari ini. Hati-hati di jalan dan semoga sehat selalu.",
+                "Terima kasih kembali. Kami berharap urusan Anda di RSJ Tampan berjalan lancar. Selamat melanjutkan aktivitas.",
+                "Dengan senang hati. Jika nanti Anda bingung arah lagi, jangan ragu untuk menyapa saya kembali. Salam sehat.",
+                "Sama-sama. Semoga informasinya bermanfaat. Kami selalu siap melayani kebutuhan informasi Anda sepenuh hati.",
+                "Wa'alaikumussalam / Terima kasih kembali. Senang bisa menjadi pemandu jalan Anda. Hati-hati dan semoga selamat sampai tujuan."
+            ]
+        },
+        {
+            "sampah": [
+                "Mohon maaf, saya belum memahami maksud pesan Bapak/Ibu. Bisakah diulangi dengan menyebutkan nama ruangan yang ingin dicari?",
+                "Maaf, sepertinya pertanyaan tersebut di luar kemampuan saya. Saya ditugaskan khusus untuk membantu navigasi ruangan di RSJ Tampan. Ada yang bisa saya bantu?",
+                "Mohon maaf jika ada kendala. Agar saya bisa membantu dengan tepat, silakan ketik nama poli, bangsal, atau ruangan yang ingin Bapak/Ibu tuju.",
+                "Halo, mari kita fokus pada tujuan kunjungan Anda. Saya siap memandu arah ke ruangan yang dibutuhkan. Silakan sebutkan nama ruangannya.",
+                "Mohon maaf, saya tidak memiliki informasi terkait hal tersebut. Namun jika Bapak/Ibu butuh petunjuk arah di area RSJ Tampan, saya siap membantu sepenuh hati."
+            ]
+        },
+        {
+            "identitas": [
+                "Saya chatbot Information / Navigation Ruang Khusus Rumah Sakit Jiwa Tampan, yang selalu siap membantu Anda menemukan tempat yang Anda cari.",
+                "Saya adalah asisten virtual RSJ Tampan yang bertugas membantu Anda menemukan lokasi ruangan dengan cepat dan mudah.",
+                "Saya dikembangkan sebagai asisten navigasi pintar untuk mempermudah pengunjung dalam menemukan ruangan di RSJ Tampan."
+            ]
+        },
+        {
+            "opsi": [
+                "Saya menemukan beberapa lokasi yang sesuai dengan kata kunci Anda. Silakan pilih salah satu:",
+                "Ada beberapa ruangan yang mirip dengan pencarian Anda. Berikut adalah pilihannya:",
+                "Terdapat lebih dari satu lokasi untuk kategori tersebut. Silakan pilih ruangan yang Anda tuju:"
+            ]
+        },
+        {
+            "cari_ruangan": [
+                "Tentu, ini adalah informasi mengenai ruangan yang Bapak/Ibu cari.",
+                "Baik, saya telah menemukan lokasi ruangan tersebut. Silakan lihat detailnya di bawah ini.",
+                "Ini dia petunjuk arah dan informasi ruangan yang Anda butuhkan.",
+                "Pencarian berhasil! Berikut adalah detail ruangan yang Anda maksud.",
+                "Saya menemukan ruangan yang sesuai. Silakan periksa informasi lokasinya berikut ini."
+            ]
+        }
+    ]
+}

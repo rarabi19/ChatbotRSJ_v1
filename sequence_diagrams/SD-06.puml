@@ -1,0 +1,101 @@
+@startuml SD-06
+skinparam backgroundColor #FAFAFA
+skinparam roundcorner 10
+skinparam shadowing false
+skinparam sequenceArrowThickness 1.5
+skinparam sequenceLifeLineBorderColor #888888
+skinparam sequenceParticipantBorderColor #444444
+skinparam sequenceParticipantFontSize 12
+skinparam sequenceMessageFontSize 11
+
+title SD-06: Feedback Salah & Auto-Learning
+
+actor "Pengunjung\n(Browser)" as User #4A90D9
+participant "Laravel\n(ChatbotController)" as Laravel #2E8B57
+participant "ChatbotService\n(Laravel)" as Service #50C878
+database "MySQL\n(Database)" as DB #3498DB
+participant "Flask\n(app.py)" as Flask #E67E22
+participant "ChatbotTrainer\n(trainer.py)" as Trainer #9B59B6
+
+== 1. User Klik Salah dan Koreksi ==
+User -> Laravel : POST /feedback\n{user_message: "dimana poli gigi?",\nis_correct: false,\ncorrect_room_name: "Poli Gigi"}
+activate Laravel
+
+== 2. Simpan Feedback Salah ==
+Laravel -> Service : saveFeedback(data)
+activate Service
+Service -> DB : ChatbotFeedback::create({\nis_correct: 0,\ncorrect_room_name: "Poli Gigi",...})
+activate DB
+DB --> Service : feedback tersimpan
+deactivate DB
+
+== 3. Update Kata Kunci Ruangan ==
+Service -> DB : Cari ruangan bernama "Poli Gigi"
+activate DB
+DB --> Service : ditemukan DataRuangan(id=8)
+deactivate DB
+
+Service -> DB : Tambah kata kunci baru:\nkata_kunci += "dimana poli gigi"
+activate DB
+DB --> Service : kata_kunci diperbarui
+deactivate DB
+
+note over Service
+  needSync = true
+  Trigger sinkronisasi model AI
+end note
+
+== 4. Sinkronisasi Otomatis (Auto-Learning) ==
+Service -> DB : Ambil semua DataRuangan\n(id, nama, gedung, keyword, dll)
+activate DB
+DB --> Service : list semua ruangan
+deactivate DB
+
+Service -> DB : Ambil feedback benar\nuntuk data training tambahan
+activate DB
+DB --> Service : list feedback
+deactivate DB
+
+Service -> Flask : POST /sync\n{rooms: [...], feedbacks: [...],\nintent_feedbacks: [...]}
+activate Flask
+
+== 5. Retraining Model AI ==
+Flask -> Trainer : train_rooms(rooms, feedbacks)
+activate Trainer
+note right of Trainer
+  Encode ulang semua ruangan (S-BERT)
+  Tambah feedback baru ke training data
+  Simpan modelDataRuangan.pkl
+end note
+Trainer --> Flask : rooms_ok = true
+deactivate Trainer
+
+Flask -> Trainer : train_intent(intent_feedbacks)
+activate Trainer
+note right of Trainer
+  Gabung data label baru
+  Latih ulang SVM classifier
+  Simpan modelLabel.pkl
+end note
+Trainer --> Flask : intent_ok = true
+deactivate Trainer
+
+Flask -> Flask : svc.reload()\n(muat ulang model baru)
+
+Flask --> Service : {success: true,\nmessage: "Sinkronisasi selesai"}
+deactivate Flask
+
+Service --> Laravel : {status: "success"}
+deactivate Service
+
+== 6. Konfirmasi ke User ==
+Laravel --> User : JSON {status: "success"}
+deactivate Laravel
+
+note over User
+  Browser tampilkan:
+  "Terima kasih! Jawaban Anda membantu
+  chatbot belajar lebih baik."
+end note
+
+@enduml

@@ -1,0 +1,591 @@
+/* 1. Dasar */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+html,
+body {
+    height: 100%;
+    width: 100%;
+    background-color: #f0f2f5;
+    overflow: hidden;
+    position: fixed;
+}
+
+/* 2. Layout */
+.container-utama {
+    width: 100%;
+    height: 100%;
+    background-color: white;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+}
+
+.header {
+    background-color: #1F5F5B;
+    padding: 15px;
+    text-align: center;
+    position: relative;
+    color: white;
+    font-weight: 700;
+    font-size: 0.9rem;
+    flex-shrink: 0;
+    border-bottom: 2px solid #164a47;
+    letter-spacing: 0.5px;
+}
+
+.area-chat {
+    flex: 1;
+    overflow-y: auto;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    background-color: #f8fafc;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+}
+
+.area-chat::-webkit-scrollbar {
+    display: none;
+}
+
+/* 3. Pesan */
+.bubble-welcome {
+    background-color: #1F5F5B;
+    color: white;
+    border-radius: 12px;
+    padding: 15px;
+    position: relative;
+    margin-left: 5px;
+    margin-top: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.teks-welcome {
+    font-size: 0.75rem;
+    line-height: 1.5;
+    margin-bottom: 12px;
+}
+
+.opsi-cepat {
+    display: block;
+    width: 100%;
+    padding: 10px 0;
+    background: none;
+    border: none;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    color: #FFECA8;
+    text-align: left;
+    font-size: 0.7rem;
+    cursor: pointer;
+    font-weight: 500;
+    transition: 0.2s;
+}
+
+.pesan-bot {
+    background-color: #1F5F5B;
+    color: white;
+    border-radius: 12px;
+    padding: 10px 14px;
+    width: fit-content;
+    max-width: 85%;
+    font-size: 0.75rem;
+    align-self: flex-start;
+    line-height: 1.4;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+/* Container Opsi (Modern & Visible) */
+.container-opsi {
+    background-color: #1F5F5B;
+    color: white;
+    border-radius: 12px;
+    width: 90%;
+    align-self: flex-start;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+    margin: 10px 0 20px 0;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.teks-opsi {
+    padding: 12px 15px;
+    font-size: 0.75rem;
+    line-height: 1.5;
+    background: rgba(0, 0, 0, 0.2);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+    font-weight: 500;
+}
+
+.tombol-opsi {
+    display: block;
+    width: 100%;
+    padding: 14px 15px;
+    background: none;
+    border: none;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    color: #FFECA8;
+    text-align: left;
+    font-size: 0.75rem;
+    cursor: pointer;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.tombol-opsi:first-of-type {
+    border-top: none;
+}
+
+.tombol-opsi:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.tombol-opsi:active {
+    background: rgba(0, 0, 0, 0.3);
+}
+
+.pesan-user {
+    background-color: #e2e8f0;
+    color: #334155;
+    border-radius: 12px 12px 0 12px;
+    padding: 10px 14px;
+    max-width: 80%;
+    font-size: 0.75rem;
+    align-self: flex-end;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+/* 4. Kartu */
+.kartu-ruangan {
+    background: #fff;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid #e2e8f0;
+    margin: 5px 0;
+    width: 100%;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    flex-shrink: 0;
+}
+
+.header-kartu {
+    background: #1F5F5B;
+    color: #fff;
+    padding: 8px 12px;
+    font-weight: 600;
+    font-size: 0.7rem;
+    display: flex;
+    align-items: center;
+}
+
+.header-kartu span {
+    width: 6px;
+    height: 6px;
+    background: #FFD700;
+    border-radius: 50%;
+    margin-right: 8px;
+}
+
+.foto-ruangan {
+    width: 100%;
+    height: 180px;
+    background: #f0f0f0 center/cover no-repeat;
+    cursor: pointer;
+    position: relative;
+}
+
+.foto-ruangan.tanpa-foto {
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.65rem;
+    color: #94a3b8;
+    font-style: italic;
+}
+
+.badge-foto {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    background: rgba(0, 0, 0, 0.6);
+    color: white;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.65rem;
+    font-weight: 600;
+    backdrop-filter: blur(4px);
+}
+
+.info-tabel {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.info-tabel td {
+    padding: 8px 12px;
+    font-size: 0.7rem;
+    border-top: 1px solid #f1f5f9;
+    vertical-align: top;
+}
+
+.label-tabel {
+    width: 85px;
+    font-weight: 700;
+    color: #1F5F5B;
+}
+
+.nilai-tabel {
+    color: #334155;
+    line-height: 1.4;
+}
+
+/* 5. Input */
+.area-input {
+    padding: 15px;
+    background: white;
+    border-top: 1px solid #e2e8f0;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.input-teks {
+    flex: 1;
+    padding: 12px 18px;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 25px;
+    outline: none;
+    font-size: 0.8rem;
+    transition: 0.2s;
+}
+
+.input-teks:focus {
+    border-color: #1F5F5B;
+    background: #f8fafc;
+}
+
+.tombol-kirim {
+    background: none;
+    border: none;
+    width: 45px;
+    height: 45px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.tombol-kirim img {
+    width: 100%;
+    height: 100%;
+}
+
+/* 6. Animasi & Modal Galeri */
+.mengetik {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 12px 16px;
+    background: #e2e8f0;
+    border-radius: 12px;
+    width: fit-content;
+    align-self: flex-start;
+    margin-bottom: 5px;
+}
+
+.mengetik span {
+    width: 6px;
+    height: 6px;
+    background: #1F5F5B;
+    border-radius: 50%;
+    animation: pantul 0.8s infinite alternate;
+    opacity: 0.4;
+}
+
+@keyframes pantul {
+    from {
+        opacity: 0.3;
+        transform: translateY(0);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(-4px);
+    }
+}
+
+.modal-galeri {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-content {
+    background: #fff;
+    width: 95%;
+    max-width: 600px;
+    border-radius: 24px;
+    overflow: hidden;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    animation: modalSlideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes modalSlideUp {
+    from {
+        transform: translateY(30px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+/* HEADER MODAL */
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.modal-title {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.icon-img {
+    background: #1F5F5B;
+    color: white;
+    padding: 8px;
+    border-radius: 8px;
+    font-size: 14px;
+}
+
+.title-main {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: #1e293b;
+}
+
+.title-sub {
+    font-size: 0.75rem;
+    color: #64748b;
+}
+
+.tutup-modal {
+    font-size: 28px;
+    cursor: pointer;
+    color: #64748b;
+    line-height: 1;
+}
+
+/* GRID FOTO (1 Kolom Besar & Scrollable) */
+.grid-galeri {
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    max-height: 70vh;
+    overflow-y: auto;
+    background: #f1f5f9;
+    scrollbar-width: none;
+}
+
+.grid-galeri::-webkit-scrollbar {
+    display: none;
+}
+
+.grid-galeri img {
+    width: 100%;
+    height: auto;
+    border-radius: 16px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    border: 3px solid white;
+    transition: transform 0.3s ease;
+}
+
+.grid-galeri img:hover {
+    transform: scale(1.02);
+}
+
+/* FOOTER MODAL */
+.modal-footer {
+    padding: 12px 18px;
+    font-size: 0.7rem;
+    color: #64748b;
+    border-top: 1px solid #e2e8f0;
+    background: #f8fafc;
+}
+
+/* 7. Desktop */
+@media (min-width: 768px) {
+    .header {
+        font-size: 1.4rem !important;
+        padding: 20px !important;
+    }
+
+    .area-chat {
+        padding: 40px 50px !important;
+    }
+
+    .area-input {
+        padding: 20px 50px !important;
+    }
+
+    .area-chat img[src*="logo-chatbot"] {
+        width: 240px !important;
+    }
+
+    .input-teks {
+        padding: 15px 25px !important;
+        font-size: 0.95rem !important;
+    }
+
+    .bubble-welcome,
+    .pesan-bot,
+    .pesan-user {
+        max-width: 600px !important;
+        margin: 10px 3rem !important;
+        font-size: 0.9rem !important;
+    }
+
+    .kartu-ruangan {
+        max-width: 600px !important;
+        margin: 4px 3rem 15px 3rem !important;
+        font-size: 0.9rem !important;
+    }
+
+    .teks-welcome,
+    .opsi-cepat,
+    .nilai-tabel,
+    .label-tabel,
+    .pesan-bot,
+    .pesan-user {
+        font-size: 0.9rem !important;
+    }
+}
+
+/* 8. Feedback */
+.container-feedback {
+    padding: 10px 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 20px;
+}
+
+.teks-pertanyaan-feedback {
+    font-size: 0.7rem;
+    color: #64748b;
+    font-weight: 400;
+}
+
+.grup-tombol-feedback {
+    display: flex;
+    gap: 15px;
+}
+
+.tombol-feedback {
+    border: none;
+    background: none;
+    cursor: pointer;
+    transition: transform 0.2s;
+    padding: 0;
+    display: flex;
+    align-items: center;
+}
+
+.tombol-feedback:hover {
+    transform: scale(1.1);
+}
+
+.tombol-feedback svg {
+    width: 32px;
+    height: 32px;
+}
+
+.tombol-feedback svg circle {
+    fill: #cbd5e1;
+    transition: 0.2s;
+}
+
+.tombol-feedback:hover svg circle,
+.tombol-feedback.aktif svg circle {
+    fill: #94a3b8;
+}
+
+.tombol-feedback.positif:hover svg circle,
+.tombol-feedback.positif.aktif svg circle {
+    fill: #1F5F5B;
+}
+
+.tombol-feedback.negatif:hover svg circle,
+.tombol-feedback.negatif.aktif svg circle {
+    fill: #64748b;
+}
+
+.feedback-selesai {
+    font-size: 0.65rem;
+    color: #1F5F5B;
+    font-weight: 500;
+    font-style: italic;
+}
+
+.container-koreksi {
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    background: #fff;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+}
+
+.input-koreksi {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    font-size: 0.7rem;
+    outline: none;
+}
+
+.tombol-koreksi {
+    background: #1F5F5B;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 0.65rem;
+    cursor: pointer;
+    font-weight: 500;
+    align-self: flex-end;
+}

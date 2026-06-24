@@ -1,0 +1,71 @@
+@startuml SD-04
+skinparam backgroundColor #FAFAFA
+skinparam roundcorner 10
+skinparam shadowing false
+skinparam sequenceArrowThickness 1.5
+skinparam sequenceLifeLineBorderColor #888888
+skinparam sequenceParticipantBorderColor #444444
+skinparam sequenceParticipantFontSize 12
+skinparam sequenceMessageFontSize 11
+
+title SD-04: Sapaan & Percakapan Umum (Greeting)
+
+actor "Pengunjung\n(Browser)" as User #4A90D9
+participant "Laravel\n(ChatbotController)" as Laravel #2E8B57
+participant "ChatbotService\n(Laravel)" as Service #50C878
+participant "Flask\n(app.py)" as Flask #E67E22
+participant "ChatbotEngine\n(engine.py)" as Engine #8E44AD
+
+== 1. User Kirim Sapaan ==
+User -> Laravel : POST /chat\n{message: "halo, selamat pagi"}
+activate Laravel
+Laravel -> Service : predict("halo, selamat pagi")
+activate Service
+Service -> Flask : POST /predict\n{message: "halo, selamat pagi"}
+activate Flask
+
+== 2. Deteksi Intent Sapaan ==
+Flask -> Engine : process("halo, selamat pagi")
+activate Engine
+note right of Engine
+  Clean text → "halo selamat pagi"
+  predict_intent() → SVM classifier
+  Intent terdeteksi: "sapaan"
+end note
+
+Engine --> Flask : intent = "sapaan"
+deactivate Engine
+
+== 3. Buat Respons Sapaan ==
+note right of Flask
+  Cek waktu saat ini:
+  04:00-11:00 → "Selamat pagi"
+  11:00-15:00 → "Selamat siang"
+  15:00-18:00 → "Selamat sore"
+  18:00-24:00 → "Selamat malam"
+end note
+
+Flask --> Service : {intent: "sapaan",\nresponse: "Selamat pagi! Ada yang bisa saya bantu?\nSilakan tanya lokasi ruangan yang Anda cari.",\nmatch_score: 1.0, best_room_id: null}
+deactivate Flask
+
+== 4. Tidak Ada Ruangan (Greeting Only) ==
+note over Service
+  best_room_id = null
+  → rooms = [] (kosong)
+  → options = null
+end note
+
+Service --> Laravel : {message: "Selamat pagi!...", rooms: [], intent: "sapaan"}
+deactivate Service
+
+== 5. Tampilkan Respons ==
+Laravel --> User : JSON {message, rooms: [], intent: "sapaan"}
+deactivate Laravel
+
+note over User
+  Browser tampilkan pesan chatbot:
+  "Selamat pagi! Ada yang bisa saya bantu?"
+  (Tanpa card ruangan)
+end note
+
+@enduml

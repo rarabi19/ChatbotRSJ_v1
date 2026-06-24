@@ -1,58 +1,5 @@
-# Master Dokumentasi Sistem AI Chatbot RSJ Tampan Pekanbaru
-=========================================================
 
-Dokumentasi ini adalah sumber kebenaran tunggal (*Single Source of Truth*) untuk sistem AI Chatbot Rumah Sakit Jiwa Tampan Pekanbaru. Dokumen ini disesuaikan dengan kondisi riil *codebase* terkini untuk kebutuhan pemeliharaan (*maintenance*), deployment produksi, dan pengembangan di masa mendatang.
-
----
-
-## DAFTAR ISI LAPORAN AKADEMIK (FINAL SEMKP)
-
-*   **BAB I PENDAHULUAN**
-    *   1.1 Latar Belakang (Urgensi penunjuk arah dan efisiensi komunikasi RSJ)
-    *   1.2 Rumusan Masalah
-    *   1.3 Batasan Masalah
-    *   1.4 Tujuan Kerja Praktik
-    *   1.5 Manfaat Kerja Praktik
-    *   1.6 Waktu dan Tempat Kerja Praktik
-    *   1.7 Sistematika Penulisan
-*   **BAB II PROFIL INSTANSI**
-    *   2.1 Profil RSJ Tampan Pekanbaru
-    *   2.2 Tugas dan Fungsi Instalasi SIMRS
-*   **BAB III LANDASAN TEORI**
-    *   3.1 Arsitektur Decoupled (Laravel ↔ Flask)
-    *   3.2 NLP untuk Rumah Sakit (Intent Classification, Slang Normalisasi, Ekstraksi Entitas)
-    *   3.3 Representasi Teks dengan Sentence‑BERT (multibahasa)
-    *   3.4 Pencarian Hibrida: Dense Embedding + Keyword Boosting
-    *   3.5 Klasifikasi Maksud dengan S-BERT dan Linear SVM
-    *   3.6 Metodologi Pengujian AI (Black‑box, Confusion Matrix, Monitoring Real‑time)
-*   **BAB IV ANALISIS DAN PERANCANGAN SISTEM**
-    *   4.1 Analisis Kebutuhan & Lingkungan Operasional
-    *   4.2 Perancangan Alur Pemrosesan Pesan Chatbot
-    *   4.3 Desain Model NLP (Intent & Embedding Ruangan)
-    *   4.4 Integrasi Model NLP dengan Backend Python
-    *   4.5 Rancangan Dashboard Administrasi
-    *   4.6 Perancangan Skema Database (MySQL) untuk Data Ruangan & Feedback
-    *   4.7 Arsitektur Backend Laravel (API, Service Layer)
-    *   4.8 Desain Frontend Laravel (Blade, UI/UX)
-    *   4.9 Integrasi Backend Laravel dengan Engine Python (REST Bridge)
-    *   4.10 Spesifikasi UI/UX Chatbot & Dashboard (Responsive, Dark Mode, Glassmorphism) 
-*   **BAB V IMPLEMENTASI SISTEM**
-    *   5.1 Implementasi Lingkungan Kerja & Spesifikasi Teknologi
-    *   5.2 Implementasi Strategi Inferensi (4-Layer Semantic Inference Architecture)
-    *   5.3 Implementasi Manajemen Dashboard & Smart Sync (MLOps)
-    *   5.4 Implementasi Mekanisme Feedback & Filter Kualitas Data (Anti-Poisoning)
-    *   5.5 Implementasi Zero-Sync (Asynchronous Deferred Training Pipeline)
-*   **BAB VI PENGUJIAN DAN EVALUASI**
-    *   6.1 Pengujian Fungsionalitas Sistem (Black Box Testing)
-    *   6.2 Evaluasi Akurasi Model Menggunakan Confusion Matrix
-    *   6.3 Analisis Umpan Balik Pengguna (User Feedback)
-*   **BAB VII PENUTUP**
-    *   7.1 Kesimpulan
-    *   7.2 Saran Pengembangan
-
----
-
-## 1. Kondisi Riil Proyek Saat Ini
+## DOKUMENTASI SISTEM
 
 Sistem AI Chatbot RSJ Tampan mengadopsi model **Decoupled Architecture** yang memisahkan antara panel manajemen admin (Laravel) dengan mesin kecerdasan buatan (Python Flask + S-BERT). 
 
@@ -118,7 +65,7 @@ Berikut adalah ringkasan singkat mengenai file utama dalam proyek, fungsi masing
 
 ---
 
-## 4. Landasan Teknis & Spesifikasi Implementasi (BAB V UTUH)
+## 4. Landasan Teknis & Spesifikasi Implementasi 
 
 ### 4.1 Implementasi Lingkungan Kerja & Spesifikasi Teknologi
 

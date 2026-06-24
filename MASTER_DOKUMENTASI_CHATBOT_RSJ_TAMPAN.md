@@ -244,38 +244,5 @@ AI Chatbot Navigasi RSJ Tampan berkontribusi aktif dalam pemenuhan standar pelay
 3.  **ARK (Akses ke Rumah Sakit dan Kontinuitas Pelayanan - ARK 1)**: Mengatur efisiensi alur perpindahan pasien (*patient flow*) dari pintu masuk utama rumah sakit langsung ke ruangan spesifik instalasi penunjang medis dengan instruksi jalan yang tepat.
 
 ---
-
-
-=====
-apa ada cara agar ini tdk dilakukan manual , agar code libih ringkas dan  clean tanpa mengurangi akurasi bot dan pemahaman bot bahkan meningkatkan pemahaman bot 
-class TextProcessor:
-    # Kata navigasi/kontekstual yang dihapus saat pencarian ruangan
-    STOP = {"dimana","lokasi","cari","arah","rute","cara","ke","posisi","letak",
-            "mana","dimanakah","temukan","tunjukkan","tolong","bantu","info",
-            "rsj","rs","tampan","rumah","sakit","di","dari","ada",
-            "apa","yang","dan","atau","saya","mau","ingin","ya","sih","saja",
-            "melakukan","harus","kemana","buat","dong","deh","nih","ini","itu",
-            "lah","kan","tuh","nya","kah","pun","juga","kok","yuk","yg",
-            "minta","tolong","bantu","kasih","tau","tahu","dong","please",
-            "bisa","boleh","perlu","butuh","pengen","mo","mw"}
-    PREF = {"ruang","ruangan","kamar","kantor","klinik","poli","toilet","mushola","gedung","instalasi"}
-
-    # Kata kunci penanda user sedang mencari lokasi/ruangan (untuk override intent)
-    NAV_WORDS = {"dimana","lokasi","cari","arah","rute","mana","letak","posisi",
-                 "menuju","kemana","tempat","nyari","tunjukkan","carikan","ketemu"}
-
-    # Kata kunci penanda query berkaitan dengan fasilitas RS (bukan random chat)
-    FACILITY_WORDS = {"kantin","makan","toilet","wc","mushola","sholat","shalat",
-                      "farmasi","apotek","obat","lab","laboratorium","poli","klinik",
-                      "igd","rawat","inap","parkir","arsip","dokter","magang","diklat",
-                      "gizi","radiologi","x-ray","pendaftaran","daftar","loket",
-                      "kasir","bayar","rehab","rehabilitasi","konsultasi","psikiatri",
-                      "psikologi","jiwa","saraf","bedah","anak","gigi","kulit",
-                      "kamar","ruang","ruangan","gedung","lantai","bangsal","satpam",
-                      "resepsionis","informasi","pengaduan","jenazah","genset","server",
-                      "laundry","linen","dapur","meeting","rapat","aula","gudang",
-                      "ibadah","sembahyang","solat","minum","haus","lapar","laper",
-                      "ngemil","jajan","mandi","kencing","berak","beol","bab",
-                      "direktur","wadir","kepala","bidang","bagian","instalasi",
                       "perawat","suster","humas","komite","iprs","cssd","pkm",
                       "depo","hemodialisa","fisioterapi","ekg","vct","isolasi"}

@@ -1,0 +1,285 @@
+# ============================================================
+# ChatbotRSJ_v1 — CI/CD Deploy Workflow
+# Stack : Laravel 12 (PHP 8.2) + Python Flask + SBERT
+# Target: VPS/Server via SSH (Nginx + Supervisor)
+#
+# SECRETS yang wajib di-set di GitHub → Settings → Secrets:
+#   SERVER_HOST      → IP / domain server (contoh: 103.x.x.x)
+#   SERVER_USER      → user SSH (contoh: ubuntu / root / deployer)
+#   SERVER_SSH_KEY   → private key SSH (isi seluruh isi id_rsa)
+#   SERVER_PORT      → port SSH (biasanya 22)
+#   SERVER_APP_DIR   → path project di server (contoh: /var/www/chatbot)
+#   DB_DATABASE      → nama database di server
+#   DB_USERNAME      → username DB di server
+#   DB_PASSWORD      → password DB di server
+# ============================================================
+
+name: 🚀 Deploy ChatbotRSJ to Server
+
+on:
+  push:
+    branches: ["main"]
+  workflow_dispatch:        # bisa trigger manual dari tab Actions
+
+# Hanya satu deployment bersamaan
+concurrency:
+  group: "chatbot-deploy"
+  cancel-in-progress: false
+
+# ============================================================
+# ENV global
+# ============================================================
+env:
+  PHP_VERSION:    "8.2"
+  PYTHON_VERSION: "3.11"
+  NODE_VERSION:   "20"
+
+jobs:
+  # ──────────────────────────────────────────────
+  # JOB 1: Build & Validasi
+  # ──────────────────────────────────────────────
+  build:
+    name: 🏗️ Build & Validate
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Checkout kode
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+
+      # 2. Setup PHP
+      - name: 🐘 Setup PHP ${{ env.PHP_VERSION }}
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ env.PHP_VERSION }}
+          extensions: mbstring, bcmath, pdo, pdo_mysql, xml, gd, curl, zip
+          coverage: none
+          tools: composer:v2
+
+      # 3. Cache Composer
+      - name: 💾 Cache Composer packages
+        uses: actions/cache@v4
+        with:
+          path: vendor
+          key: ${{ runner.os }}-composer-${{ hashFiles('composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-composer-
+
+      # 4. Install PHP dependencies (tanpa dev untuk produksi)
+      - name: 📦 Install Composer dependencies
+        run: composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist
+
+      # 5. Setup Node.js & build frontend assets
+      - name: 🟢 Setup Node.js ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "npm"
+
+      - name: 📦 Install NPM & Build assets (Vite)
+        run: |
+          npm ci
+          npm run build
+
+      # 6. Setup Python
+      - name: 🐍 Setup Python ${{ env.PYTHON_VERSION }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: "pip"
+          cache-dependency-path: python_chatbot/requirements.txt
+
+      # 7. Validasi install Python dependencies
+      - name: 📦 Validate Python dependencies
+        run: |
+          pip install --upgrade pip
+          pip install -r python_chatbot/requirements.txt --dry-run
+          echo "✅ Python dependencies OK"
+
+      # 8. Buat .env untuk validasi Laravel
+      - name: ⚙️ Create .env for validation
+        run: |
+          cp .env.example .env
+          php artisan key:generate
+          echo "✅ Laravel bootstrap OK"
+
+      # 9. Upload build artifacts (public/build)
+      - name: 📤 Upload built assets
+        uses: actions/upload-artifact@v4
+        with:
+          name: built-assets
+          path: public/build/
+          retention-days: 1
+
+  # ──────────────────────────────────────────────
+  # JOB 2: Deploy ke Server via SSH
+  # ──────────────────────────────────────────────
+  deploy:
+    name: 🚀 Deploy to Server
+    runs-on: ubuntu-latest
+    needs: build           # jalankan setelah build sukses
+    environment:
+      name: production
+
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+
+      # Download built assets dari job sebelumnya
+      - name: 📥 Download built assets
+        uses: actions/download-artifact@v4
+        with:
+          name: built-assets
+          path: public/build/
+
+      # Deploy via SSH: rsync kode ke server
+      - name: 🔄 Sync files to server (rsync)
+        uses: burnett01/rsync-deployments@7.0.1
+        with:
+          switches: >
+            -avzr
+            --delete
+            --exclude='.git'
+            --exclude='.github'
+            --exclude='.env'
+            --exclude='node_modules'
+            --exclude='vendor'
+            --exclude='.venv'
+            --exclude='python_chatbot/model_resource/embedding_cache.pkl'
+            --exclude='python_chatbot/model_resource/modelDataRuangan.pkl'
+            --exclude='python_chatbot/model_resource/sbert_miniLM'
+            --exclude='storage/logs'
+            --exclude='storage/framework/cache'
+            --exclude='storage/framework/sessions'
+            --exclude='storage/framework/views'
+            --exclude='__pycache__'
+          path: ./
+          remote_path: ${{ secrets.SERVER_APP_DIR }}
+          remote_host: ${{ secrets.SERVER_HOST }}
+          remote_port: ${{ secrets.SERVER_PORT }}
+          remote_user: ${{ secrets.SERVER_USER }}
+          remote_key:  ${{ secrets.SERVER_SSH_KEY }}
+
+      # Jalankan perintah finalisasi di server
+      - name: 🔧 Run post-deploy commands on server
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host:     ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key:      ${{ secrets.SERVER_SSH_KEY }}
+          port:     ${{ secrets.SERVER_PORT }}
+          script: |
+            set -e
+            APP_DIR="${{ secrets.SERVER_APP_DIR }}"
+            echo "📁 Masuk ke direktori: $APP_DIR"
+            cd "$APP_DIR"
+
+            # ── Laravel Setup ──────────────────────────────
+            echo "🐘 Install PHP dependencies..."
+            composer install --no-dev --optimize-autoloader --no-interaction
+
+            echo "⚙️ Update .env database config..."
+            sed -i "s/^DB_DATABASE=.*/DB_DATABASE=${{ secrets.DB_DATABASE }}/" .env
+            sed -i "s/^DB_USERNAME=.*/DB_USERNAME=${{ secrets.DB_USERNAME }}/" .env
+            sed -i "s/^DB_PASSWORD=.*/DB_PASSWORD=${{ secrets.DB_PASSWORD }}/" .env
+
+            echo "🔑 Generate app key jika belum ada..."
+            php artisan key:generate --no-interaction --force || true
+
+            echo "🗄️ Jalankan migrasi database..."
+            php artisan migrate --force --no-interaction
+
+            echo "⚡ Cache Laravel (config, route, view)..."
+            php artisan config:cache
+            php artisan route:cache
+            php artisan view:cache
+            php artisan event:cache
+
+            echo "🔗 Buat storage symlink..."
+            php artisan storage:link --force || true
+
+            echo "📁 Set permission storage & cache..."
+            chmod -R 775 storage bootstrap/cache
+            chown -R www-data:www-data storage bootstrap/cache || true
+
+            # ── Python Chatbot Setup ───────────────────────
+            echo "🐍 Setup Python virtual environment..."
+            if [ ! -d ".venv" ]; then
+              python3 -m venv .venv
+              echo "  ✅ Virtual env dibuat"
+            fi
+
+            echo "📦 Install Python dependencies..."
+            .venv/bin/pip install --upgrade pip --quiet
+            .venv/bin/pip install -r python_chatbot/requirements.txt --quiet
+
+            # ── Download SBERT Model (jika belum ada) ─────
+            echo "🤖 Cek SBERT model..."
+            SBERT_DIR="python_chatbot/model_resource/sbert_miniLM"
+            if [ ! -d "$SBERT_DIR" ] || [ -z "$(ls -A $SBERT_DIR 2>/dev/null)" ]; then
+              echo "  📥 Mengunduh SBERT paraphrase-multilingual-MiniLM-L12-v2..."
+              .venv/bin/python3 -c "
+            from sentence_transformers import SentenceTransformer
+            import shutil, os
+            model = SentenceTransformer('paraphrase-multilingual-MiniLM-L12-v2')
+            model.save('$SBERT_DIR')
+            print('  ✅ SBERT model tersimpan di $SBERT_DIR')
+            "
+            else
+              echo "  ✅ SBERT model sudah ada, lewati download"
+            fi
+
+            # ── Regenerate model pkl jika belum ada ───────
+            echo "🔄 Cek model pkl..."
+            if [ ! -f "python_chatbot/model_resource/modelDataRuangan.pkl" ]; then
+              echo "  ⚠️  modelDataRuangan.pkl tidak ada → perlu sync via admin panel"
+              echo "  💡 Akses [domain]/admin lalu klik Sinkronisasi Data"
+            else
+              echo "  ✅ modelDataRuangan.pkl sudah ada"
+            fi
+
+            # ── Restart Python Flask Service ───────────────
+            echo "🔄 Restart Python chatbot service..."
+            if command -v supervisorctl &> /dev/null; then
+              sudo supervisorctl restart chatbot-python || echo "  ⚠️  Supervisor: service chatbot-python tidak ditemukan"
+            elif command -v systemctl &> /dev/null; then
+              sudo systemctl restart chatbot-python || echo "  ⚠️  Systemd: service chatbot-python tidak ditemukan"
+            else
+              echo "  ⚠️  Process manager tidak ditemukan, restart manual diperlukan"
+            fi
+
+            # ── Restart Laravel Queue (jika ada) ──────────
+            php artisan queue:restart || true
+
+            echo ""
+            echo "✅ ======================================"
+            echo "✅  Deploy ChatbotRSJ berhasil!"
+            echo "✅ ======================================"
+            echo "🌐 Cek aplikasi di server Anda"
+
+  # ──────────────────────────────────────────────
+  # JOB 3: Notifikasi Status Deploy
+  # ──────────────────────────────────────────────
+  notify:
+    name: 📢 Notify Deploy Status
+    runs-on: ubuntu-latest
+    needs: [build, deploy]
+    if: always()
+
+    steps:
+      - name: ✅ Deploy Sukses
+        if: needs.deploy.result == 'success'
+        run: |
+          echo "🎉 ChatbotRSJ berhasil di-deploy!"
+          echo "📅 Waktu: $(date '+%Y-%m-%d %H:%M:%S UTC')"
+          echo "🔖 Commit: ${{ github.sha }}"
+          echo "👤 By    : ${{ github.actor }}"
+
+      - name: ❌ Deploy Gagal
+        if: needs.deploy.result == 'failure' || needs.build.result == 'failure'
+        run: |
+          echo "💥 Deploy GAGAL!"
+          echo "📅 Waktu : $(date '+%Y-%m-%d %H:%M:%S UTC')"
+          echo "🔖 Commit: ${{ github.sha }}"
+          echo "📋 Cek log di tab Actions untuk detail error"
+          exit 1

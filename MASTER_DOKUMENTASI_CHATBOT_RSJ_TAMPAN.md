@@ -244,5 +244,3 @@ AI Chatbot Navigasi RSJ Tampan berkontribusi aktif dalam pemenuhan standar pelay
 3.  **ARK (Akses ke Rumah Sakit dan Kontinuitas Pelayanan - ARK 1)**: Mengatur efisiensi alur perpindahan pasien (*patient flow*) dari pintu masuk utama rumah sakit langsung ke ruangan spesifik instalasi penunjang medis dengan instruksi jalan yang tepat.
 
 ---
-                      "perawat","suster","humas","komite","iprs","cssd","pkm",
-                      "depo","hemodialisa","fisioterapi","ekg","vct","isolasi"}
